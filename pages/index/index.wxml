@@ -1,0 +1,12 @@
+<view class="container">
+  <block wx:for="{{countdowns}}" wx:key="name">
+    <view class="festival-card" style="background-color: {{item.color}}">
+      <image class="festival-image" src="{{item.image}}" mode="aspectFill" />
+      <text class="festival-name">{{item.name}}</text>
+      <text class="festival-countdown"  wx:if="{{item.daysLeft !==0}}">
+      {{item.daysLeft > 0 ? '还有'+ item.daysLeft:'已过'+ -item.daysLeft}} 天</text>
+      <text class="festival-countdown" wx:else>今天过节了开心玩吧</text>
+      <text class="festival-desc">{{item.description}}</text>
+    </view>
+  </block>
+</view>
