@@ -1,0 +1,182 @@
+<view class="container">
+  <!-- 月度统计卡片 -->
+  <view class="stats-card">
+    <view class="stats-header">
+      <text class="stats-title">{{currentMonth}}月收支</text>
+      <view class="query-btn" bindtap="toggleQueryPanel">
+        <text class="query-icon">🔍</text>
+        <text class="query-text">查询</text>
+      </view>
+    </view>
+    <view class="stats-content">
+      <view class="stats-item income">
+        <text class="stats-label">收入</text>
+        <text class="stats-amount">+{{monthlyStats.income}}</text>
+      </view>
+      <view class="stats-item expense">
+        <text class="stats-label">支出</text>
+        <text class="stats-amount">-{{monthlyStats.expense}}</text>
+      </view>
+      <view class="stats-item balance">
+        <text class="stats-label">结余</text>
+        <text class="stats-amount {{monthlyStats.balance >= 0 ? 'positive' : 'negative'}}">
+          {{monthlyStats.balance >= 0 ? '+' : ''}}{{monthlyStats.balance}}
+        </text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 查询面板 -->
+  <view class="query-panel" hidden="{{!showQueryPanel}}">
+    <view class="query-header">
+      <text class="query-title">时间查询</text>
+    </view>
+
+    <!-- 查询模式选择 -->
+    <view class="query-mode-tabs">
+      <view class="query-tab {{queryMode === 'day' ? 'active' : ''}}"
+            data-mode="day" bindtap="switchQueryMode">
+        <text>日</text>
+      </view>
+      <view class="query-tab {{queryMode === 'month' ? 'active' : ''}}"
+            data-mode="month" bindtap="switchQueryMode">
+        <text>月</text>
+      </view>
+      <view class="query-tab {{queryMode === 'year' ? 'active' : ''}}"
+            data-mode="year" bindtap="switchQueryMode">
+        <text>年</text>
+      </view>
+    </view>
+
+    <!-- 日期选择器 -->
+    <view class="date-picker-section">
+      <!-- 日查询 -->
+      <view class="picker-item" hidden="{{queryMode !== 'day'}}">
+        <text class="picker-label">选择日期：</text>
+        <picker mode="date" value="{{selectedDate}}" bindchange="onDateChange">
+          <view class="picker-value">{{selectedDate}}</view>
+        </picker>
+      </view>
+
+      <!-- 月查询 -->
+      <view class="picker-item" hidden="{{queryMode !== 'month'}}">
+        <text class="picker-label">选择月份：</text>
+        <picker mode="date" fields="month" value="{{selectedMonth}}" bindchange="onMonthChange">
+          <view class="picker-value">{{selectedMonth}}</view>
+        </picker>
+      </view>
+
+      <!-- 年查询 -->
+      <view class="picker-item" hidden="{{queryMode !== 'year'}}">
+        <text class="picker-label">选择年份：</text>
+        <picker mode="date" fields="year" value="{{selectedYear}}" bindchange="onYearChange">
+          <view class="picker-value">{{selectedYear}}</view>
+        </picker>
+      </view>
+    </view>
+
+    <!-- 查询按钮 -->
+    <view class="query-actions">
+      <button class="query-btn-primary" bindtap="executeQuery">开始查询</button>
+      <button class="query-btn-cancel" bindtap="toggleQueryPanel">取消</button>
+    </view>
+  </view>
+
+  <!-- 快速记账 -->
+  <view class="quick-add-section">
+    <view class="section-header">
+      <text class="section-title">快速记账</text>
+    </view>
+
+    <!-- 标签页切换 -->
+    <view class="tab-bar">
+      <view class="tab-item {{activeTab === 0 ? 'active' : ''}}"
+            data-index="0" bindtap="switchTab">
+        <text>支出</text>
+      </view>
+      <view class="tab-item {{activeTab === 1 ? 'active' : ''}}"
+            data-index="1" bindtap="switchTab">
+        <text>收入</text>
+      </view>
+    </view>
+
+    <!-- 分类网格 -->
+    <view class="categories-grid">
+      <!-- 支出分类 -->
+      <view class="category-section" hidden="{{activeTab !== 0}}">
+        <view class="category-item"
+              wx:for="{{expenseCategories}}"
+              wx:key="id"
+              data-type="expense"
+              data-category-id="{{item.id}}"
+              bindtap="quickAdd">
+          <view class="category-icon" style="background-color: {{item.color}}">
+            <text class="icon-emoji">{{item.icon}}</text>
+          </view>
+          <text class="category-name">{{item.name}}</text>
+        </view>
+      </view>
+
+      <!-- 收入分类 -->
+      <view class="category-section" hidden="{{activeTab !== 1}}">
+        <view class="category-item"
+              wx:for="{{incomeCategories}}"
+              wx:key="id"
+              data-type="income"
+              data-category-id="{{item.id}}"
+              bindtap="quickAdd">
+          <view class="category-icon" style="background-color: {{item.color}}">
+            <text class="icon-emoji">{{item.icon}}</text>
+          </view>
+          <text class="category-name">{{item.name}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 最近交易 -->
+  <view class="recent-section">
+    <view class="section-header">
+      <text class="section-title">最近交易</text>
+      <text class="more-btn" bindtap="viewAllTransactions">查看全部</text>
+    </view>
+
+    <view class="transaction-list">
+      <block wx:if="{{recentTransactions.length > 0}}">
+        <view class="transaction-item"
+              wx:for="{{recentTransactions}}"
+              wx:key="id"
+              data-id="{{item.id}}"
+              bindtap="viewTransaction">
+          <view class="transaction-left">
+            <view class="transaction-category">
+              <text class="category-icon-small"
+                    style="background-color: {{item.categoryColor}}">
+                {{item.categoryIcon}}
+              </text>
+              <view class="transaction-info">
+                <text class="transaction-title">{{item.displayTitle}}</text>
+                <text class="transaction-time">{{item.displayDate}}</text>
+              </view>
+            </view>
+          </view>
+          <view class="transaction-right">
+            <text class="transaction-amount {{item.type === 'income' ? 'income' : 'expense'}}">
+              {{item.type === 'income' ? '+' : '-'}}{{item.amount}}
+            </text>
+          </view>
+        </view>
+      </block>
+
+      <view wx:if="{{recentTransactions.length === 0}}" class="empty-state">
+        <text class="empty-text">暂无交易记录</text>
+        <text class="empty-hint">点击上方分类开始记账吧</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 悬浮添加按钮 -->
+  <view class="fab" bindtap="addTransaction">
+    <text class="fab-icon">+</text>
+  </view>
+</view>

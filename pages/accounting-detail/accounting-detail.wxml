@@ -1,0 +1,104 @@
+<view class="container">
+  <!-- 收支类型切换 -->
+  <view class="type-selector">
+    <view class="type-item {{type === 'expense' ? 'active expense' : ''}}"
+          data-type="expense" bindtap="switchType">
+      <text>支出</text>
+    </view>
+    <view class="type-item {{type === 'income' ? 'active income' : ''}}"
+          data-type="income" bindtap="switchType">
+      <text>收入</text>
+    </view>
+  </view>
+
+  <!-- 金额输入 -->
+  <view class="amount-section">
+    <view class="amount-input-wrapper">
+      <text class="currency-symbol">￥</text>
+      <input class="amount-input"
+             type="number"
+             placeholder="0.00"
+             bindblur="onAmountBlur"
+             disabled="{{mode === 'view'}}"
+             maxlength="10"
+             confirm-type="done" />
+    </view>
+  </view>
+
+  <!-- 分类选择 -->
+  <view class="category-section">
+    <view class="section-title">
+      <text>选择分类</text>
+    </view>
+    <view class="categories-grid">
+      <block wx:if="{{type === 'expense'}}">
+        <view class="category-item {{selectedCategory && selectedCategory.id === item.id ? 'selected' : ''}}"
+              wx:for="{{expenseCategories}}"
+              wx:key="id"
+              data-id="{{item.id}}"
+              bindtap="selectCategory">
+          <view class="category-icon" style="background-color: {{item.color}}">
+            <text class="icon-emoji">{{item.icon}}</text>
+          </view>
+          <text class="category-name">{{item.name}}</text>
+        </view>
+      </block>
+
+      <block wx:if="{{type === 'income'}}">
+        <view class="category-item {{selectedCategory && selectedCategory.id === item.id ? 'selected' : ''}}"
+              wx:for="{{incomeCategories}}"
+              wx:key="id"
+              data-id="{{item.id}}"
+              bindtap="selectCategory">
+          <view class="category-icon" style="background-color: {{item.color}}">
+            <text class="icon-emoji">{{item.icon}}</text>
+          </view>
+          <text class="category-name">{{item.name}}</text>
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <!-- 日期选择 -->
+  <view class="form-section">
+    <view class="form-item">
+      <text class="form-label">日期</text>
+      <picker mode="date"
+              value="{{date}}"
+              bindchange="onDateChange"
+              disabled="{{mode === 'view'}}">
+        <view class="form-value">
+          <text>{{date}}</text>
+          <text class="arrow">></text>
+        </view>
+      </picker>
+    </view>
+  </view>
+
+  <!-- 备注输入 -->
+  <view class="form-section">
+    <view class="form-item">
+      <text class="form-label">备注</text>
+      <input class="form-input"
+             placeholder="添加备注（可选）"
+             value="{{note}}"
+             bindinput="onNoteInput"
+             disabled="{{mode === 'view'}}" />
+    </view>
+  </view>
+
+  <!-- 操作按钮 -->
+  <view class="action-buttons">
+    <block wx:if="{{mode === 'add' || mode === 'edit'}}">
+      <button class="save-btn {{type === 'income' ? 'income' : 'expense'}}"
+              bindtap="saveTransaction">
+        {{mode === 'add' ? '保存' : '更新'}}
+      </button>
+    </block>
+
+    <block wx:if="{{mode === 'view'}}">
+      <button class="edit-btn" bindtap="enterEditMode">编辑</button>
+      <button class="delete-btn" bindtap="deleteTransaction">删除</button>
+    </block>
+  </view>
+</view>

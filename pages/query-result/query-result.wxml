@@ -1,0 +1,123 @@
+<view class="container">
+  <!-- 查询结果头部 -->
+  <view class="result-header">
+    <view class="header-content">
+      <text class="result-title">{{queryTitle}}</text>
+      <view class="result-summary">
+        <text class="summary-text">共 {{stats.transactionCount}} 笔交易</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 统计卡片 -->
+  <view class="stats-section">
+    <view class="stats-card">
+      <view class="stats-item income">
+        <text class="stats-label">收入</text>
+        <text class="stats-amount">+{{stats.income}}</text>
+      </view>
+      <view class="stats-item expense">
+        <text class="stats-label">支出</text>
+        <text class="stats-amount">-{{stats.expense}}</text>
+      </view>
+      <view class="stats-item balance">
+        <text class="stats-label">结余</text>
+        <text class="stats-amount {{stats.balance >= 0 ? 'positive' : 'negative'}}">
+          {{stats.balance >= 0 ? '+' : ''}}{{stats.balance}}
+        </text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 图表展示 -->
+  <view class="chart-section" wx:if="{{showChart}}">
+    <view class="chart-header">
+      <text class="chart-title">
+        {{queryMode === 'month' ? '分类统计' : '月度趋势'}}
+      </text>
+    </view>
+
+    <!-- 月度分类图表 -->
+    <view class="category-chart" wx:if="{{queryMode === 'month'}}">
+      <block wx:for="{{chartData.categories}}" wx:key="name">
+        <view class="chart-item">
+          <view class="chart-item-left">
+            <text class="chart-icon" style="background-color: {{item.color}}">{{item.icon}}</text>
+            <text class="chart-name">{{item.name}}</text>
+          </view>
+          <view class="chart-item-right">
+            <view class="chart-bar">
+              <view class="chart-bar-fill"
+                    style="width: {{item.percentage}}%; background-color: {{item.color}}"></view>
+            </view>
+            <text class="chart-amount">{{item.amount}}</text>
+          </view>
+        </view>
+      </block>
+    </view>
+
+    <!-- 年度趋势图表 -->
+    <view class="trend-chart" wx:if="{{queryMode === 'year'}}">
+      <block wx:for="{{chartData.categories}}" wx:key="name">
+        <view class="trend-item">
+          <text class="trend-month">{{item.name}}</text>
+          <view class="trend-bars">
+            <view class="trend-bar income">
+              <view class="trend-bar-fill"
+                    style="height: {{item.incomeHeight}}%; background-color: #52C41A"></view>
+            </view>
+            <view class="trend-bar expense">
+              <view class="trend-bar-fill"
+                    style="height: {{item.expenseHeight}}%; background-color: #FF6B6B"></view>
+            </view>
+          </view>
+          <view class="trend-amounts">
+            <text class="trend-income">+{{item.income}}</text>
+            <text class="trend-expense">-{{item.expense}}</text>
+          </view>
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <!-- 交易记录列表 -->
+  <view class="transactions-section">
+    <view class="section-header">
+      <text class="section-title">交易明细</text>
+    </view>
+
+    <view class="transaction-list">
+      <block wx:if="{{transactions.length > 0}}">
+        <view class="transaction-item"
+              wx:for="{{transactions}}"
+              wx:key="id"
+              data-id="{{item.id}}"
+              bindtap="viewTransaction">
+          <view class="transaction-left">
+            <view class="transaction-category">
+              <text class="category-icon-small"
+                    style="background-color: {{item.categoryColor}}">
+                {{item.categoryIcon}}
+              </text>
+              <view class="transaction-info">
+                <text class="transaction-title">{{item.displayTitle}}</text>
+                <text class="transaction-time">{{item.displayDate}}</text>
+              </view>
+            </view>
+          </view>
+          <view class="transaction-right">
+            <text class="transaction-amount {{item.type === 'income' ? 'income' : 'expense'}}">
+              {{item.type === 'income' ? '+' : '-'}}{{item.amount}}
+            </text>
+          </view>
+        </view>
+      </block>
+
+      <view wx:if="{{transactions.length === 0}}" class="empty-state">
+        <text class="empty-icon">📊</text>
+        <text class="empty-text">该时间段暂无交易记录</text>
+        <text class="empty-hint">返回记账本开始记录吧</text>
+      </view>
+    </view>
+  </view>
+</view>

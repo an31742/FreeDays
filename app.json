@@ -1,11 +1,30 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/accounting/accounting",
+    "pages/accounting-detail/accounting-detail",
+    "pages/query-result/query-result",
     "pages/logs/logs"
   ],
+  "tabBar": {
+    "color": "#666666",
+    "selectedColor": "#3399FF",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "假期生活"
+      },
+      {
+        "pagePath": "pages/accounting/accounting",
+        "text": "记账本"
+      }
+    ]
+  },
   "window": {
     "navigationBarTextStyle": "black",
-    "navigationBarTitleText": "距离假期还有",
+    "navigationBarTitleText": "假期生活",
     "navigationBarBackgroundColor": "#ffffff"
   },
   "style": "v2",
