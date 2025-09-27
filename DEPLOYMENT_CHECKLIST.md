@@ -4,7 +4,7 @@
 
 ### ✅ 小程序信息
 - **AppID**: `wx37031fe607647fa3` ✅ 已配置
-- **AppSecret**: `029874ac1aee76391bc7c7f8bcc7f40a` ✅ 已知
+- **AppSecret**: `你的微信小程序AppSecret` ⚠️ 需要配置
 - **域名**: `https://next-vite-delta.vercel.app` ✅ 已知
 
 ## 🔧 部署前检查 (必须完成)
@@ -23,7 +23,7 @@
 - [ ] 添加环境变量：
   ```
   WECHAT_APP_ID = wx37031fe607647fa3
-  WECHAT_APP_SECRET = 029874ac1aee76391bc7c7f8bcc7f40a
+  WECHAT_APP_SECRET = 你的微信小程序AppSecret
   ```
 - [ ] 重新部署项目
 

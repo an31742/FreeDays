@@ -112,7 +112,7 @@ function step3_testAuthentication() {
   console.log('检查Next.js环境变量配置:');
   console.log('确保在 .env 文件中配置了:');
   console.log('WECHAT_APP_ID=wx37031fe607647fa3');
-  console.log('WECHAT_APP_SECRET=029874ac1aee76391bc7c7f8bcc7f40a');
+  console.log('WECHAT_APP_SECRET=你的微信小程序AppSecret');
   console.log('');
 
   wx.login({

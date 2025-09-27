@@ -133,7 +133,7 @@ function step4_testAuthentication() {
   console.log('检查后端环境变量配置...');
   console.log('需要配置的环境变量:');
   console.log('- WECHAT_APP_ID=wx37031fe607647fa3');
-  console.log('- WECHAT_APP_SECRET=029874ac1aee76391bc7c7f8bcc7f40a');
+  console.log('- WECHAT_APP_SECRET=你的微信小程序AppSecret');
   console.log('');
 
   wx.login({

@@ -16,7 +16,7 @@
 4. 确认包含：
    ```
    WECHAT_APP_ID = wx37031fe607647fa3
-   WECHAT_APP_SECRET = 029874ac1aee76391bc7c7f8bcc7f40a
+   WECHAT_APP_SECRET = 你的微信小程序AppSecret
    ```
 
 ### 第3分钟：运行测试
