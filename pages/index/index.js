@@ -2,11 +2,11 @@
 Page({
   data: {
     festivals: [
-      { name: '春节', date: '2025-01-29', description: '中国农历新年', image: 'https://img1.baidu.com/it/u=381463868,2944515135&fm=253&fmt=auto&app=120&f=JPEG?w=1280&h=800', color: '#FF6666' },
-      { name: '清明节', date: '2025-04-05', description: '缅怀先人，春季踏青好时节', image: 'https://img1.baidu.com/it/u=340781851,1377282715&fm=253&fmt=auto&app=120&f=JPEG?w=750&h=500', color: '#66CC66' },
-      { name: '劳动节', date: '2025-05-01', description: '国际劳动节，享受假期', image: 'https://img0.baidu.com/it/u=1100066089,3708114890&fm=253&fmt=auto&app=138&f=JPEG?w=845&h=475', color: '#FFCC33' },
-      { name: '端午节', date: '2025-06-01', description: '赛龙舟、吃粽子', image: 'https://img2.baidu.com/it/u=3698634301,12757380&fm=253&fmt=auto&app=138&f=JPEG?w=486&h=486', color: '#3399FF' },
-      { name: '中秋节', date: '2025-10-06', description: '团圆节，赏月吃月饼', image: '../image/zhongqiu.webp', color: '#9966CC' },
+      { name: '春节', date: '2025-01-29', description: '中国农历新年', image: '/pages/image/spring.webp', color: '#FF6666' },
+      { name: '清明节', date: '2025-04-05', description: '缅怀先人，春季踏青好时节', image: '/pages/image/qingming.webp', color: '#66CC66' },
+      { name: '劳动节', date: '2025-05-01', description: '国际劳动节，享受假期', image: '/pages/image/wuyi.webp', color: '#FFCC33' },
+      { name: '端午节', date: '2025-06-01', description: '赛龙舟、吃粽子', image: '/pages/image/duanwu.webp', color: '#3399FF' },
+      { name: '中秋节', date: '2025-10-06', description: '团圆节，赏月吃月饼', image: '/pages/image/zhongqiu.webp', color: '#9966CC' },
     ],
     countdowns: []
   },
