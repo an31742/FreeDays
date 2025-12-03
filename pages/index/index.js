@@ -2,11 +2,12 @@
 Page({
   data: {
     festivals: [
-      { name: '春节', date: '2025-01-29', description: '中国农历新年', image: '/pages/image/spring.webp', color: '#FF6666' },
-      { name: '清明节', date: '2025-04-05', description: '缅怀先人，春季踏青好时节', image: '/pages/image/qingming.webp', color: '#66CC66' },
-      { name: '劳动节', date: '2025-05-01', description: '国际劳动节，享受假期', image: '/pages/image/wuyi.webp', color: '#FFCC33' },
-      { name: '端午节', date: '2025-06-01', description: '赛龙舟、吃粽子', image: '/pages/image/duanwu.webp', color: '#3399FF' },
-      { name: '中秋节', date: '2025-10-06', description: '团圆节，赏月吃月饼', image: '/pages/image/zhongqiu.webp', color: '#9966CC' },
+      { name: '春节', date: '2026-02-15', description: '中国农历新年', image: '/pages/image/spring.webp', color: '#FF6666' },
+      { name: '清明节', date: '2026-04-04', description: '缅怀先人，春季踏青好时节', image: '/pages/image/qingming.webp', color: '#66CC66' },
+      { name: '劳动节', date: '2026-05-01', description: '国际劳动节，享受假期', image: '/pages/image/wuyi.webp', color: '#FFCC33' },
+      { name: '端午节', date: '2026-06-19', description: '赛龙舟、吃粽子', image: '/pages/image/duanwu.webp', color: '#3399FF' },
+      { name: '中秋节', date: '2026-09-25', description: '团圆节，赏月吃月饼', image: '/pages/image/zhongqiu.webp', color: '#9966CC' },
+       { name: '国庆节', date: '2026-10-01', description: '纪念国家本身', image: '/pages/image/gq.jpeg', color: '#9966CC' },
     ],
     countdowns: []
   },
