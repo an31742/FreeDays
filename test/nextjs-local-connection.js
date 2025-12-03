@@ -2,6 +2,9 @@
 // Next.js 本地后端连接测试脚本
 // 在微信开发者工具控制台中运行
 
+// 引入测试数据管理器
+const { testDataManager } = require('../utils/test-utils.js');
+
 console.log('🚀 ===== Next.js 本地后端连接测试 =====');
 console.log('Next.js 版本: 14.0.4');
 console.log('本地地址: http://localhost:3000');
@@ -190,33 +193,29 @@ function step4_testDataOperations() {
   };
 
   console.log('测试创建交易记录...');
-  wx.request({
-    url: 'http://localhost:3000/api/transactions',
-    method: 'POST',
-    header: {
-      'Authorization': `Bearer ${testToken}`,
-      'Content-Type': 'application/json'
-    },
-    data: testTransaction,
-    timeout: 15000,
-    success: (res) => {
-      console.log('✅ 数据创建成功:', res.data);
-      testDataRetrieval();
-    },
-    fail: (err) => {
-      console.error('❌ 数据创建失败:', err);
 
-      if (err.errMsg && err.errMsg.includes('404')) {
-        console.log('💡 交易API端点可能未实现');
-      } else if (err.errMsg && err.errMsg.includes('401')) {
-        console.log('💡 Token验证失败，检查JWT配置');
-      } else if (err.errMsg && err.errMsg.includes('500')) {
-        console.log('💡 数据库连接或操作失败');
-      }
+  testDataManager.createTestTransaction(
+    'http://localhost:3000',
+    testToken,
+    testTransaction
+  )
+  .then((createdData) => {
+    console.log('✅ 数据创建成功:', createdData);
+    testDataRetrieval();
+  })
+  .catch((err) => {
+    console.error('❌ 数据创建失败:', err);
 
-      testStatus.dataOperationsWorking = false;
-      generateTestReport();
+    if (err.errMsg && err.errMsg.includes('404')) {
+      console.log('💡 交易API端点可能未实现');
+    } else if (err.errMsg && err.errMsg.includes('401')) {
+      console.log('💡 Token验证失败，检查JWT配置');
+    } else if (err.errMsg && err.errMsg.includes('500')) {
+      console.log('💡 数据库连接或操作失败');
     }
+
+    testStatus.dataOperationsWorking = false;
+    generateTestReport();
   });
 }
 

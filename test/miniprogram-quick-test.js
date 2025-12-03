@@ -1,6 +1,9 @@
 // test/miniprogram-quick-test.js
 // 在小程序开发者工具控制台中直接运行的测试脚本
 
+// 引入测试数据管理器
+const { testDataManager } = require('../utils/test-utils.js');
+
 console.log('🚀 开始小程序API快速测试...');
 console.log('目标域名: https://next-vite-delta.vercel.app/api');
 console.log('');
@@ -104,44 +107,62 @@ function testTransactionAPI() {
       date: new Date().toISOString().split('T')[0]
     };
 
-    wx.request({
-      url: 'https://next-vite-delta.vercel.app/api/transactions',
-      method: 'POST',
-      header: {
-        'Authorization': `Bearer ${token}`
-      },
-      data: testTransaction,
-      timeout: 5000,
-      success: (res) => {
-        console.log('✅ 交易创建成功!', res);
-        testResults.transactionAPI = true;
+    console.log('创建测试交易记录...');
 
-        // 测试获取交易列表
-        wx.request({
-          url: 'https://next-vite-delta.vercel.app/api/transactions?page=1&pageSize=5',
-          method: 'GET',
-          header: {
-            'Authorization': `Bearer ${token}`
-          },
-          success: (listRes) => {
-            console.log('✅ 交易列表获取成功!', listRes);
-          },
-          fail: (listErr) => {
-            console.log('⚠️ 交易列表获取失败:', listErr);
-          }
-        });
+    testDataManager.createTestTransaction(
+      'https://next-vite-delta.vercel.app',
+      token,
+      testTransaction
+    )
+    .then((createdData) => {
+      console.log('✅ 交易创建成功!', createdData);
+      testResults.transactionAPI = true;
 
-        resolve(true);
-      },
-      fail: (err) => {
-        console.error('❌ 交易接口测试失败:', err);
-        console.log('💡 可能的解决方案:');
-        console.log('  1. 检查Token是否有效');
-        console.log('  2. 确认交易接口实现正确');
-        console.log('  3. 检查数据格式是否符合要求');
-        testResults.transactionAPI = false;
-        resolve(false);
-      }
+      // 测试获取交易列表
+      wx.request({
+        url: 'https://next-vite-delta.vercel.app/api/transactions?page=1&pageSize=5',
+        method: 'GET',
+        header: {
+          'Authorization': `Bearer ${token}`
+        },
+        success: (listRes) => {
+          console.log('✅ 交易列表获取成功!', listRes);
+
+          // 清理测试数据
+          testDataManager.cleanupAllTestData('https://next-vite-delta.vercel.app', token)
+            .then(() => {
+              console.log('✅ 测试数据清理完成');
+              resolve(true);
+            })
+            .catch((error) => {
+              console.error('❌ 测试数据清理过程中出现错误:', error);
+              resolve(true); // 即使清理失败也认为测试成功
+            });
+        },
+        fail: (listErr) => {
+          console.log('⚠️ 交易列表获取失败:', listErr);
+
+          // 清理测试数据
+          testDataManager.cleanupAllTestData('https://next-vite-delta.vercel.app', token)
+            .then(() => {
+              console.log('✅ 测试数据清理完成');
+              resolve(true);
+            })
+            .catch((error) => {
+              console.error('❌ 测试数据清理过程中出现错误:', error);
+              resolve(true); // 即使清理失败也认为测试成功
+            });
+        }
+      });
+    })
+    .catch((err) => {
+      console.error('❌ 交易接口测试失败:', err);
+      console.log('💡 可能的解决方案:');
+      console.log('  1. 检查Token是否有效');
+      console.log('  2. 确认交易接口实现正确');
+      console.log('  3. 检查数据格式是否符合要求');
+      testResults.transactionAPI = false;
+      resolve(false);
     });
   });
 }

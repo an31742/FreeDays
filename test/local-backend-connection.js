@@ -2,6 +2,9 @@
 // 本地后端连接测试脚本
 // 在微信开发者工具控制台中运行
 
+// 引入测试数据管理器
+const { testDataManager } = require('../utils/test-utils.js');
+
 console.log('🏠 ===== 本地后端连接测试开始 =====');
 console.log('本地API地址: http://localhost:3000/api');
 console.log('AppID: wx37031fe607647fa3');
@@ -204,31 +207,27 @@ function step5_testDataOperations() {
   };
 
   console.log('测试创建交易记录...');
-  wx.request({
-    url: 'http://localhost:3000/api/transactions',
-    method: 'POST',
-    header: {
-      'Authorization': `Bearer ${localTestToken}`,
-      'Content-Type': 'application/json'
-    },
-    data: testData,
-    timeout: 10000,
-    success: (res) => {
-      console.log('✅ 数据操作测试成功:', res.data);
-      testResults.dataOperations = true;
 
-      // 测试获取数据
-      testDataRetrieval();
-    },
-    fail: (err) => {
-      console.error('❌ 数据操作测试失败:', err);
-      console.log('💡 可能原因:');
-      console.log('- 数据库连接问题');
-      console.log('- 交易接口实现问题');
-      console.log('- 数据验证失败');
-      testResults.dataOperations = false;
-      generateLocalTestReport();
-    }
+  testDataManager.createTestTransaction(
+    'http://localhost:3000',
+    localTestToken,
+    testData
+  )
+  .then((createdData) => {
+    console.log('✅ 数据操作测试成功:', createdData);
+    testResults.dataOperations = true;
+
+    // 测试获取数据
+    testDataRetrieval();
+  })
+  .catch((err) => {
+    console.error('❌ 数据操作测试失败:', err);
+    console.log('💡 可能原因:');
+    console.log('- 数据库连接问题');
+    console.log('- 交易接口实现问题');
+    console.log('- 数据验证失败');
+    testResults.dataOperations = false;
+    generateLocalTestReport();
   });
 }
 

@@ -2,6 +2,9 @@
 // 调试在线状态问题的脚本
 // 在微信开发者工具控制台中运行
 
+// 引入测试数据管理器
+const { testDataManager } = require('../utils/test-utils.js');
+
 console.log('🔍 ===== 在线状态调试诊断 =====');
 console.log('当前时间:', new Date().toLocaleString());
 console.log('');
@@ -183,27 +186,23 @@ async function testSaveFunction() {
   try {
     const token = wx.getStorageSync('access_token');
 
-    const response = await new Promise((resolve, reject) => {
-      wx.request({
-        url: 'http://localhost:3000/api/transactions',
-        method: 'POST',
-        header: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
-        data: testData,
-        timeout: 15000,
-        success: resolve,
-        fail: reject
-      });
-    });
+    // 使用测试数据管理器创建测试数据
+    const createdData = await testDataManager.createTestTransaction(
+      'http://localhost:3000',
+      token,
+      testData
+    );
 
-    console.log('✅ 在线保存测试成功:', response.data);
+    console.log('✅ 在线保存测试成功:', createdData);
+
+    // 清理测试数据
+    await testDataManager.cleanupAllTestData('http://localhost:3000', token);
+    console.log('✅ 测试数据清理完成');
+
     wx.showToast({
       title: '在线保存功能正常',
       icon: 'success'
     });
-
   } catch (error) {
     console.error('❌ 在线保存测试失败:', error);
     wx.showToast({

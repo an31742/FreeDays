@@ -1,11 +1,16 @@
 // test/your-domain-test.js
-// 专门针对你的域名和配置的测试脚本
-// 在微信开发者工具控制台中运行
+// 你的域名配置测试脚本
 
-console.log('🚀 开始测试你的小程序API配置');
+// 引入测试数据管理器
+const { testDataManager } = require('../utils/test-utils.js');
+
+console.log('🎯 ===== 你的域名配置测试 =====');
+console.log('目标域名: https://next-vite-delta.vercel.app');
 console.log('AppID: wx37031fe607647fa3');
-console.log('域名: https://next-vite-delta.vercel.app/api');
+console.log('当前时间:', new Date().toLocaleString());
 console.log('');
+
+let testToken = '';  // 用于存储测试Token
 
 // 测试配置验证
 function verifyConfiguration() {
@@ -82,7 +87,7 @@ function testWechatLogin() {
 
             if (res.data && res.data.access_token) {
               console.log('🎫 Token获取成功:', res.data.access_token.substring(0, 30) + '...');
-              wx.setStorageSync('test_token', res.data.access_token);
+              testToken = res.data.access_token;
               resolve(true);
             } else {
               console.log('⚠️ 登录成功但未获取到Token');
@@ -111,35 +116,59 @@ function testAuthorizedAPI() {
   return new Promise((resolve) => {
     console.log('🔒 测试需要授权的接口...');
 
-    const token = wx.getStorageSync('test_token');
-    if (!token) {
+    if (!testToken) {
       console.log('⚠️ 跳过授权接口测试 (未获取到Token)');
       resolve(false);
       return;
     }
 
-    // 测试获取交易列表
-    wx.request({
-      url: 'https://next-vite-delta.vercel.app/api/transactions?page=1&pageSize=5',
-      method: 'GET',
-      header: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
-      },
-      timeout: 10000,
-      success: (res) => {
-        console.log('✅ 授权接口调用成功!');
-        console.log('交易列表数据:', res.data);
-        resolve(true);
-      },
-      fail: (err) => {
-        console.error('❌ 授权接口调用失败:', err);
-        console.log('💡 可能原因:');
-        console.log('   1. Token验证失败');
-        console.log('   2. 后端接口实现问题');
-        console.log('   3. 数据库连接问题');
-        resolve(false);
-      }
+    // 创建一个测试交易记录
+    const testTransaction = {
+      type: 'expense',
+      amount: 55.55,
+      categoryId: 'food',
+      note: '域名配置测试记录',
+      date: new Date().toISOString().split('T')[0]
+    };
+
+    console.log('创建测试交易记录...');
+
+    testDataManager.createTestTransaction(
+      'https://next-vite-delta.vercel.app',
+      testToken,
+      testTransaction
+    )
+    .then((createdData) => {
+      console.log('✅ 授权接口调用成功!');
+      console.log('创建的交易记录:', createdData);
+
+      // 测试获取交易列表
+      wx.request({
+        url: 'https://next-vite-delta.vercel.app/api/transactions?page=1&pageSize=5',
+        method: 'GET',
+        header: {
+          'Authorization': `Bearer ${testToken}`,
+          'Content-Type': 'application/json'
+        },
+        timeout: 10000,
+        success: (res) => {
+          console.log('✅ 交易列表获取成功!');
+          console.log('交易列表数据:', res.data);
+          resolve(true);
+        },
+        fail: (err) => {
+          console.error('❌ 交易列表获取失败:', err);
+          resolve(false);
+        }
+      });
+    })
+    .catch((err) => {
+      console.error('❌ 创建交易记录失败:', err);
+      console.log('💡 可能原因:');
+      console.log('   1. Token验证失败');
+      console.log('   2. 后端接口实现问题');
+      console.log('   3. 数据库连接问题');
+      resolve(false);
     });
   });
 }
@@ -176,6 +205,17 @@ function generateTestReport(results) {
     console.log('1. 根据上述错误信息修复配置问题');
     console.log('2. 确认后端服务正常运行');
     console.log('3. 重新运行测试');
+  }
+
+  // 清理测试数据
+  if (testToken) {
+    testDataManager.cleanupAllTestData('https://next-vite-delta.vercel.app', testToken)
+      .then(() => {
+        console.log('✅ 测试数据清理完成');
+      })
+      .catch((error) => {
+        console.error('❌ 测试数据清理过程中出现错误:', error);
+      });
   }
 }
 

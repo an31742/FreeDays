@@ -8,6 +8,9 @@ console.log('AppID: wx37031fe607647fa3');
 console.log('当前时间:', new Date().toLocaleString());
 console.log('');
 
+// 引入测试数据管理器
+const { testDataManager } = require('../utils/test-utils.js');
+
 // 测试状态跟踪
 const testResults = {
   domainConfigured: false,
@@ -19,6 +22,7 @@ const testResults = {
 };
 
 let prodToken = '';
+let testTransactionId = null; // 用于记录测试交易ID
 
 // 步骤1: 检查域名配置
 function step1_checkDomainConfig() {
@@ -229,33 +233,29 @@ function step5_testDataOperations() {
   };
 
   console.log('测试创建线上交易记录...');
-  wx.request({
-    url: 'https://next-vite-delta.vercel.app/api/transactions',
-    method: 'POST',
-    header: {
-      'Authorization': `Bearer ${prodToken}`,
-      'Content-Type': 'application/json'
-    },
-    data: testTransaction,
-    timeout: 20000,
-    success: (res) => {
-      console.log('✅ 线上数据创建成功:', res.data);
-      testDataRetrieval();
-    },
-    fail: (err) => {
-      console.error('❌ 线上数据创建失败:', err);
 
-      if (err.errMsg && err.errMsg.includes('401')) {
-        console.log('💡 Token验证失败，可能原因:');
-        console.log('- JWT密钥配置错误');
-        console.log('- Token格式问题');
-      } else if (err.errMsg && err.errMsg.includes('500')) {
-        console.log('💡 数据库操作失败');
-      }
+  testDataManager.createTestTransaction(
+    'https://next-vite-delta.vercel.app',
+    prodToken,
+    testTransaction
+  )
+  .then((createdData) => {
+    console.log('✅ 线上数据创建成功:', createdData);
+    testDataRetrieval();
+  })
+  .catch((err) => {
+    console.error('❌ 线上数据创建失败:', err);
 
-      testResults.dataOperations = false;
-      generateProductionTestReport();
+    if (err.errMsg && err.errMsg.includes('401')) {
+      console.log('💡 Token验证失败，可能原因:');
+      console.log('- JWT密钥配置错误');
+      console.log('- Token格式问题');
+    } else if (err.errMsg && err.errMsg.includes('500')) {
+      console.log('💡 数据库操作失败');
     }
+
+    testResults.dataOperations = false;
+    generateProductionTestReport();
   });
 }
 
@@ -347,8 +347,22 @@ function generateProductionTestReport() {
   console.log('- 监控API调用频率和限制');
   console.log('- 定期检查部署状态');
 
+  // 清理测试数据
+  cleanupTestData();
+
   console.log('\n⏰ 测试完成时间:', new Date().toLocaleString());
   console.log('=====================================');
+}
+
+// 清理测试数据
+function cleanupTestData() {
+  testDataManager.cleanupAllTestData('https://next-vite-delta.vercel.app', prodToken)
+    .then(() => {
+      console.log('✅ 测试数据清理完成');
+    })
+    .catch((error) => {
+      console.error('❌ 测试数据清理过程中出现错误:', error);
+    });
 }
 
 // 手动修复在线状态函数

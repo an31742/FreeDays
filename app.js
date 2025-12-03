@@ -83,39 +83,11 @@ App({
 
   // 初始化记账本数据
   initAccountingData() {
+    // 不再创建示例数据，仅检查是否存在交易记录
     const transactions = wx.getStorageSync('transactions');
-    if (!transactions || transactions.length === 0) {
-      // 创建一些示例数据
-      const sampleData = [
-        {
-          id: Date.now() + '_1',
-          type: 'expense',
-          amount: 25.50,
-          categoryId: 'food',
-          note: '早餐',
-          date: new Date().toISOString().split('T')[0],
-          createTime: new Date().toISOString()
-        },
-        {
-          id: Date.now() + '_2',
-          type: 'income',
-          amount: 5000,
-          categoryId: 'salary',
-          note: '工资',
-          date: new Date().toISOString().split('T')[0],
-          createTime: new Date().toISOString()
-        },
-        {
-          id: Date.now() + '_3',
-          type: 'expense',
-          amount: 15.00,
-          categoryId: 'transport',
-          note: '地铁',
-          date: new Date(Date.now() - 86400000).toISOString().split('T')[0], // 昨天
-          createTime: new Date().toISOString()
-        }
-      ];
-      wx.setStorageSync('transactions', sampleData);
+    if (!transactions) {
+      // 如果没有交易记录，初始化为空数组
+      wx.setStorageSync('transactions', []);
     }
   },
 

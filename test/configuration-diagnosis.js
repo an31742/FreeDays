@@ -1,3 +1,6 @@
+// 引入测试数据管理器
+const { testDataManager } = require('../utils/test-utils.js');
+
 // 配置诊断脚本 - 检查小程序配置与实际使用不一致的问题
 // 在微信开发者工具控制台中运行
 
@@ -161,17 +164,93 @@ function step5_checkActualRequests() {
   console.log('发起实际API请求，观察网络面板...');
   console.log('💡 请同时查看微信开发者工具的Network面板');
 
+  // 首先尝试获取Token进行认证请求
+  wx.login({
+    success: (loginRes) => {
+      wx.request({
+        url: 'https://next-vite-delta.vercel.app/api/auth/login',
+        method: 'POST',
+        data: { code: loginRes.code },
+        timeout: 10000,
+        success: (authRes) => {
+          if (authRes.data && authRes.data.access_token) {
+            const token = authRes.data.access_token;
+
+            // 创建一个测试交易记录来验证实际请求行为
+            const testTransaction = {
+              type: 'expense',
+              amount: 33.33,
+              categoryId: 'food',
+              note: '配置诊断测试记录',
+              date: new Date().toISOString().split('T')[0]
+            };
+
+            console.log('创建测试交易记录...');
+
+            testDataManager.createTestTransaction(
+              'https://next-vite-delta.vercel.app',
+              token,
+              testTransaction
+            )
+            .then((createdData) => {
+              console.log('✅ API请求成功，创建交易记录:', createdData);
+              diagnosis.actualRequestDomains.push('next-vite-delta.vercel.app');
+
+              // 清理测试数据
+              testDataManager.cleanupAllTestData('https://next-vite-delta.vercel.app', token)
+                .then(() => {
+                  console.log('✅ 测试数据清理完成');
+                  generateDiagnosisReport();
+                })
+                .catch((error) => {
+                  console.error('❌ 测试数据清理过程中出现错误:', error);
+                  generateDiagnosisReport();
+                });
+            })
+            .catch((err) => {
+              console.error('❌ API请求失败:', err);
+
+              if (err.errMsg && err.errMsg.includes('url not in domain list')) {
+                diagnosis.issues.push('确认问题：域名未在微信公众平台正确配置');
+              } else if (err.errMsg && err.errMsg.includes('request:fail')) {
+                diagnosis.issues.push('网络请求失败，可能是服务器问题');
+              }
+
+              generateDiagnosisReport();
+            });
+          } else {
+            // 如果认证失败，至少测试健康检查端点
+            testHealthEndpoint();
+          }
+        },
+        fail: (err) => {
+          console.error('❌ 认证请求失败:', err);
+          // 如果认证失败，至少测试健康检查端点
+          testHealthEndpoint();
+        }
+      });
+    },
+    fail: (err) => {
+      console.error('❌ 微信登录失败:', err);
+      // 如果微信登录失败，至少测试健康检查端点
+      testHealthEndpoint();
+    }
+  });
+}
+
+// 测试健康检查端点
+function testHealthEndpoint() {
   wx.request({
     url: 'https://next-vite-delta.vercel.app/api/health',
     method: 'GET',
     timeout: 10000,
     success: (res) => {
-      console.log('✅ API请求成功:', res);
+      console.log('✅ API健康检查请求成功:', res);
       diagnosis.actualRequestDomains.push('next-vite-delta.vercel.app');
       generateDiagnosisReport();
     },
     fail: (err) => {
-      console.error('❌ API请求失败:', err);
+      console.error('❌ API健康检查请求失败:', err);
 
       if (err.errMsg && err.errMsg.includes('url not in domain list')) {
         diagnosis.issues.push('确认问题：域名未在微信公众平台正确配置');

@@ -1,6 +1,9 @@
 // test/production-test.js
 // 生产环境API测试脚本
 
+// 引入测试数据管理器
+const { testDataManager } = require('../utils/test-utils.js');
+
 console.log('=== 生产环境API测试开始 ===');
 console.log('API域名: https://next-vite-delta.vercel.app/api');
 console.log('');
