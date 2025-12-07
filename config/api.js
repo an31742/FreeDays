@@ -2,7 +2,7 @@
 const config = {
   // 开发环境配置
   development: {
-    baseURL: 'http://localhost:3000/api',  // 本地开发环境
+    baseURL: 'http://localhost:9527/api',  // 本地开发环境（next-api 端口）
     timeout: 10000,
     debug: true
   },
@@ -23,7 +23,7 @@ const config = {
 };
 
 // 获取当前环境配置
-const env = 'production'; // 切换到生产环境使用线上接口
+const env = 'production'; // 使用线上环境
 const apiConfig = config[env];
 
 module.exports = {
