@@ -16,38 +16,21 @@ Page({
     selectedCategory: null,
     // 日期
     date: '',
-    // 支出分类
-    expenseCategories: [
-      { id: 'food', name: '餐饮', icon: '🍽️', color: '#FF6B6B' },
-      { id: 'transport', name: '交通', icon: '🚗', color: '#4ECDC4' },
-      { id: 'shopping', name: '购物', icon: '🛍️', color: '#45B7D1' },
-      { id: 'entertainment', name: '娱乐', icon: '🎮', color: '#96CEB4' },
-      { id: 'healthcare', name: '医疗', icon: '🏥', color: '#FFEAA7' },
-      { id: 'education', name: '学习', icon: '📚', color: '#DDA0DD' },
-      { id: 'housing', name: '住房', icon: '🏠', color: '#FFB6C1' },
-      { id: 'other', name: '其他', icon: '📝', color: '#C0C0C0' }
-    ],
-    // 收入分类
-    incomeCategories: [
-      { id: 'salary', name: '工资', icon: '💰', color: '#52C41A' },
-      { id: 'bonus', name: '奖金', icon: '🎁', color: '#1890FF' },
-      { id: 'investment', name: '投资', icon: '📈', color: '#722ED1' },
-      { id: 'part_time', name: '兼职', icon: '⏰', color: '#FA8C16' },
-      { id: 'gift', name: '礼金', icon: '🎊', color: '#EB2F96' },
-      { id: 'other', name: '其他', icon: '📝', color: '#C0C0C0' }
-    ],
+    expenseCategories: [],
+    incomeCategories: [],
     // 当前交易记录ID（编辑模式下使用）
     transactionId: null
   },
 
   onLoad(options) {
-    // 设置默认日期为今天
     const today = new Date();
     const dateString = this.formatDateForInput(today);
 
     this.setData({
       date: dateString
     });
+
+    this.loadCategories();
 
     // 处理页面参数，添加安全检查
     if (options && options.type) {
@@ -82,6 +65,19 @@ Page({
 
     // 设置页面标题
     this.updateNavigationTitle();
+  },
+
+  async loadCategories() {
+    try {
+      const { categoriesAPI } = require('../../api/transaction.js');
+      const categories = await categoriesAPI.getAll();
+      this.setData({
+        incomeCategories: categories.income || [],
+        expenseCategories: categories.expense || []
+      });
+    } catch (error) {
+      console.error('Failed to load categories:', error);
+    }
   },
 
   // 更新导航栏标题
