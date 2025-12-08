@@ -1,7 +1,7 @@
 // index.js
 const getApiBase = () => {
   const accountInfo = wx.getAccountInfoSync();
-  return accountInfo.miniProgram.envVersion === 'release' 
+  return accountInfo.miniProgram.envVersion === 'release'
     ? 'https://next-vite-delta.vercel.app/api'
     : 'http://localhost:9527/api';
 };
@@ -26,7 +26,6 @@ Page({
   },
 
   getUserId() {
-    // 获取用户唯一标识
     let userId = wx.getStorageSync('userId');
     if (!userId) {
       userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
@@ -44,35 +43,7 @@ Page({
       return { ...festival, daysLeft: diffDays };
     });
 
-    this.setData({ countdowns }, () => {
-      this.syncToServer(); // 同步到服务器
-    });
-  },
-
-  syncToServer() {
-    const { userId, countdowns } = this.data;
-
-    wx.request({
-      url: `${getApiBase()}/transactions`,
-      method: 'POST',
-      header: {
-        'Content-Type': 'application/json'
-      },
-      data: {
-        type: 'expense',
-        amount: countdowns[0]?.daysLeft || 0,
-        categoryId: 'festival_countdown',
-        note: JSON.stringify(countdowns),
-        date: new Date().toISOString().split('T')[0],
-        userId: userId
-      },
-      success: (res) => {
-        console.log('同步成功:', res.data);
-      },
-      fail: (err) => {
-        console.error('同步失败:', err);
-      }
-    });
+    this.setData({ countdowns });
   },
 
   // 监听用户点击右上角分享

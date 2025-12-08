@@ -63,22 +63,8 @@ App({
 
   // 同步本地数据到服务器
   async syncLocalDataToServer() {
-    try {
-      const { syncAPI } = require('./api/transaction.js');
-      const result = await syncAPI.syncLocalData();
-
-      if (result && (result.success.length > 0 || result.failed.length > 0)) {
-        console.log('Data sync completed:', result);
-        wx.showToast({
-          title: `同步完成: 成功${result.success.length}条`,
-          icon: 'success',
-          duration: 2000
-        });
-      }
-    } catch (error) {
-      console.error('Sync local data error:', error);
-      // 同步失败不影响正常使用
-    }
+    // 禁用自动同步，避免重复数据
+    console.log('自动同步已禁用');
   },
 
   // 初始化记账本数据

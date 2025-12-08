@@ -153,6 +153,13 @@ class CategoryAPI {
   }
 
   /**
+   * 获取所有分类
+   */
+  async getAll() {
+    return this.getList();
+  }
+
+  /**
    * 创建自定义分类
    */
   async create(categoryData) {
@@ -213,6 +220,7 @@ class SyncAPI {
 module.exports = {
   transactionAPI: new TransactionAPI(),
   statisticsAPI: new StatisticsAPI(),
+  categoriesAPI: new CategoryAPI(),
   categoryAPI: new CategoryAPI(),
   syncAPI: new SyncAPI()
 };
