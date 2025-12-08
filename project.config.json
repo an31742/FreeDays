@@ -2,7 +2,15 @@
   "compileType": "miniprogram",
   "libVersion": "trial",
   "packOptions": {
-    "ignore": [],
+    "ignore": [
+      {"type": "file", "value": "*.md"},
+      {"type": "file", "value": "*.sh"},
+      {"type": "file", "value": "init-admin-user.js"},
+      {"type": "file", "value": "migrate-user-schema.js"},
+      {"type": "file", "value": "fix-user-system.sh"},
+      {"type": "folder", "value": "docs/"},
+      {"type": "folder", "value": "test/"}
+    ],
     "include": []
   },
   "setting": {
