@@ -122,32 +122,13 @@ Page({
       }
     } catch (error) {
       console.error('Failed to load transaction from API:', error);
-      // 失败时降级到本地模式
+      wx.showToast({ title: '加载失败', icon: 'none' });
     }
-
-    // 使用本地数据
-    this.loadTransactionFromLocal(id);
   },
 
   // 从本地加载交易记录
   loadTransactionFromLocal(id) {
-    const transactions = wx.getStorageSync('transactions') || [];
-    const transaction = transactions.find(t => t.id === id);
-
-    if (transaction) {
-      const categories = transaction.type === 'income' ? this.data.incomeCategories : this.data.expenseCategories;
-      const category = categories.find(cat => cat.id === transaction.categoryId);
-
-      this.setData({
-        type: transaction.type,
-        amount: transaction.amount ? transaction.amount.toString() : '',
-        note: transaction.note || '',
-        selectedCategory: category || null,
-        date: transaction.date ? this.formatDateForInput(new Date(transaction.date)) : this.data.date
-      });
-
-      console.log('Transaction loaded from local storage:', transaction);
-    }
+    wx.showToast({ title: '暂无数据', icon: 'none' });
   },
 
   // 切换收支类型
@@ -309,13 +290,6 @@ Page({
           icon: 'success'
         });
 
-        // API保存成功后，也更新本地数据以保证一致性
-        this.saveToLocal({
-          id: result.id || this.data.transactionId || Date.now().toString(),
-          ...transactionData,
-          createTime: result.createTime || new Date().toISOString()
-        });
-
       } else {
         // 离线模式，保存到本地
         throw new Error('当前为离线模式');
@@ -323,21 +297,11 @@ Page({
 
     } catch (error) {
       console.error('Failed to save transaction to API:', error);
-
-      // API失败，保存到本地
-      const transaction = {
-        id: this.data.transactionId || Date.now().toString(),
-        ...transactionData,
-        createTime: new Date().toISOString(),
-        _pendingSync: true  // 标记为待同步
-      };
-
-      this.saveToLocal(transaction);
-
       wx.showToast({
-        title: this.data.mode === 'add' ? '记账成功(本地)' : '保存成功(本地)',
-        icon: 'success'
+        title: '保存失败，请检查网络',
+        icon: 'none'
       });
+      return;
     } finally {
       wx.hideLoading();
 
@@ -348,24 +312,7 @@ Page({
     }
   },
 
-  // 保存到本地存储
-  saveToLocal(transaction) {
-    const transactions = wx.getStorageSync('transactions') || [];
 
-    if (this.data.mode === 'add') {
-      // 添加新记录
-      transactions.unshift(transaction);
-    } else if (this.data.mode === 'edit') {
-      // 更新现有记录
-      const index = transactions.findIndex(t => t.id === this.data.transactionId);
-      if (index !== -1) {
-        transactions[index] = { ...transactions[index], ...transaction };
-      }
-    }
-
-    wx.setStorageSync('transactions', transactions);
-    console.log('Transaction saved to local storage:', transaction);
-  },
 
   // 删除交易记录
   deleteTransaction() {
@@ -380,50 +327,16 @@ Page({
           });
 
           try {
-            // 尝试从API删除
             if (app.isOnlineMode()) {
               await transactionAPI.delete(this.data.transactionId);
-              console.log('Transaction deleted from API');
+              wx.showToast({ title: '删除成功', icon: 'success' });
+              setTimeout(() => { wx.navigateBack(); }, 1500);
+            } else {
+              throw new Error('离线模式');
             }
-
-            // 从本地存储删除
-            const transactions = wx.getStorageSync('transactions') || [];
-            const index = transactions.findIndex(t => t.id === this.data.transactionId);
-            if (index !== -1) {
-              transactions.splice(index, 1);
-              wx.setStorageSync('transactions', transactions);
-            }
-
-            wx.showToast({
-              title: '删除成功',
-              icon: 'success'
-            });
-
-            setTimeout(() => {
-              wx.navigateBack();
-            }, 1500);
-
           } catch (error) {
-            console.error('Failed to delete transaction from API:', error);
-
-            // API删除失败，但仍然从本地删除，标记为待同步
-            const transactions = wx.getStorageSync('transactions') || [];
-            const index = transactions.findIndex(t => t.id === this.data.transactionId);
-            if (index !== -1) {
-              // 标记为已删除待同步，而不是直接删除
-              transactions[index]._deleted = true;
-              transactions[index]._pendingSync = true;
-              wx.setStorageSync('transactions', transactions);
-            }
-
-            wx.showToast({
-              title: '删除成功(本地)',
-              icon: 'success'
-            });
-
-            setTimeout(() => {
-              wx.navigateBack();
-            }, 1500);
+            console.error('Failed to delete:', error);
+            wx.showToast({ title: '删除失败，请检查网络', icon: 'none' });
           } finally {
             wx.hideLoading();
           }

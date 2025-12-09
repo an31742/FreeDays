@@ -90,14 +90,10 @@ Page({
     try {
       let transactions = [];
 
-      // 尝试从API获取数据
       if (app.isOnlineMode()) {
         transactions = await this.loadFromAPI();
       } else {
-        // 离线模式从本地存储获取
-        const allTransactions = wx.getStorageSync('transactions') || [];
-        // 过滤掉已删除的记录
-        transactions = allTransactions.filter(t => !t._deleted);
+        throw new Error('离线模式');
       }
 
       const filteredTransactions = this.filterTransactionsByDate(transactions);
@@ -105,12 +101,8 @@ Page({
 
     } catch (error) {
       console.error('加载查询数据失败:', error);
-      // 降级到本地存储
-      const allTransactions = wx.getStorageSync('transactions') || [];
-      // 过滤掉已删除的记录
-      const transactions = allTransactions.filter(t => !t._deleted);
-      const filteredTransactions = this.filterTransactionsByDate(transactions);
-      this.calculateAndDisplayStats(filteredTransactions);
+      this.setData({ transactions: [], stats: { income: '0.00', expense: '0.00', balance: '0.00', transactionCount: 0 } });
+      wx.showToast({ title: '暂无数据', icon: 'none' });
     } finally {
       wx.hideLoading();
     }
@@ -216,17 +208,14 @@ Page({
     let transactions = [];
 
     try {
-      // 尝试从API获取数据
       if (app.isOnlineMode()) {
         transactions = await this.loadFromAPI();
       } else {
-        const allTransactions = wx.getStorageSync('transactions') || [];
-        // 过滤掉已删除的记录
-        transactions = allTransactions.filter(t => !t._deleted);
+        throw new Error('离线模式');
       }
     } catch (error) {
       console.error('获取图表数据失败:', error);
-      transactions = wx.getStorageSync('transactions') || [];
+      transactions = [];
     }
 
     if (queryMode === 'month') {

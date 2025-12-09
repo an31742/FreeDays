@@ -27,11 +27,9 @@ App({
 
       if (success) {
         console.log('Auto login successful');
-        // 设置在线状态
         this.setOnlineStatus(true);
         console.log('设置为在线模式');
 
-        // 清空本地缓存的交易数据
         wx.removeStorageSync('transactions');
         console.log('已清空本地交易数据');
 

@@ -113,48 +113,22 @@ Page({
       }
     } catch (error) {
       console.error('Failed to load monthly stats from API:', error);
-      // 失败时降级到本地模式
+      this.loadMonthlyStatsFromLocal(currentYear, currentMonth);
     }
-
-    // 使用本地数据
-    this.loadMonthlyStatsFromLocal(currentYear, currentMonth);
   },
 
   // 从本地加载月度统计
   loadMonthlyStatsFromLocal(currentYear, currentMonth) {
-    const transactions = wx.getStorageSync('transactions') || [];
-    // 过滤掉已删除的记录
-    const validTransactions = transactions.filter(t => !t._deleted);
-
-    let income = 0;
-    let expense = 0;
-
-    validTransactions.forEach(transaction => {
-      if (!transaction.date || !transaction.amount || !transaction.type) return;
-
-      const transactionDate = new Date(transaction.date);
-      if (transactionDate.getFullYear() === currentYear &&
-          transactionDate.getMonth() + 1 === currentMonth) {
-        const amount = parseFloat(transaction.amount) || 0;
-        if (transaction.type === 'income') {
-          income += amount;
-        } else {
-          expense += amount;
-        }
-      }
-    });
-
     this.setData({
       currentMonth: currentMonth,
       currentYear: currentYear,
       monthlyStats: {
-        income: income.toFixed(2),
-        expense: expense.toFixed(2),
-        balance: (income - expense).toFixed(2)
+        income: '0.00',
+        expense: '0.00',
+        balance: '0.00'
       }
     });
-
-    console.log('Monthly stats loaded from local storage');
+    console.log('暂无数据');
   },
 
   // 加载最近交易记录
@@ -192,46 +166,17 @@ Page({
       }
     } catch (error) {
       console.error('Failed to load recent transactions from API:', error);
-      // 失败时降级到本地模式
+      this.setData({ recentTransactions: [] });
+      wx.showToast({ title: '暂无数据', icon: 'none' });
     }
-
-    // 使用本地数据
-    this.loadRecentTransactionsFromLocal();
   },
 
   // 从本地加载最近交易记录
   loadRecentTransactionsFromLocal() {
-    const transactions = wx.getStorageSync('transactions') || [];
-    // 过滤掉已删除的记录
-    const validTransactions = transactions.filter(t => !t._deleted);
-
-    // 按日期排序，最新的在前面
-    const sortedTransactions = validTransactions.sort((a, b) => {
-      if (!a.date || !b.date) return 0;
-      return new Date(b.date) - new Date(a.date);
-    });
-
-    // 只显示最近10条，并预处理所有显示数据
-    const recentTransactions = sortedTransactions.slice(0, 10).map(transaction => {
-      const categoryInfo = this.getCategoryInfo(transaction.type, transaction.categoryId);
-      const formattedDate = this.formatDate(transaction.date);
-
-      return {
-        ...transaction,
-        amount: transaction.amount ? parseFloat(transaction.amount).toFixed(2) : '0.00',
-        categoryName: categoryInfo.name,
-        categoryIcon: categoryInfo.icon,
-        categoryColor: categoryInfo.color,
-        displayTitle: transaction.note || categoryInfo.name,
-        displayDate: formattedDate
-      };
-    });
-
     this.setData({
-      recentTransactions: recentTransactions
+      recentTransactions: []
     });
-
-    console.log('Recent transactions loaded from local storage');
+    console.log('暂无数据');
   },
 
   // 快速记账
