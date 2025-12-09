@@ -31,8 +31,9 @@ App({
         this.setOnlineStatus(true);
         console.log('设置为在线模式');
 
-        // 可以在这里同步本地数据到服务器
-        this.syncLocalDataToServer();
+        // 清空本地缓存的交易数据
+        wx.removeStorageSync('transactions');
+        console.log('已清空本地交易数据');
 
         wx.showToast({
           title: '登录成功',
