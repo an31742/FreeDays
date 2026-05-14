@@ -156,7 +156,7 @@ Page({
       if (res.code === 200) {
         const list = res.data && res.data.list ? res.data.list : [];
         const pagination = res.data && res.data.pagination ? res.data.pagination : { page: 1, totalPages: 1 };
-
+        
         this.setData({
           transactions: [...this.data.transactions, ...list],
           page: this.data.page + 1,
