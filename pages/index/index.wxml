@@ -1,12 +1,47 @@
+<!-- index.wxml -->
 <view class="container">
-  <block wx:for="{{countdowns}}" wx:key="name">
-    <view class="festival-card" style="background-color: {{item.color}}">
-      <image class="festival-image" src="{{item.image}}" mode="aspectFill" />
-      <text class="festival-name">{{item.name}}</text>
-      <text class="festival-countdown"  wx:if="{{item.daysLeft !==0}}">
-      {{item.daysLeft > 0 ? '还有'+ item.daysLeft:'已过'+ -item.daysLeft}} 天</text>
-      <text class="festival-countdown" wx:else>今天过节了开心玩吧</text>
-      <text class="festival-desc">{{item.description}}</text>
+  <view class="header">
+    <text class="title">节假日倒计时</text>
+    <view wx:if="{{error}}" class="status-tag">{{error}}</view>
+  </view>
+
+  <view wx:if="{{loading}}" class="loading-state">
+    <text>正在加载假期信息...</text>
+  </view>
+
+  <view wx:else class="countdown-list">
+    <view 
+      wx:for="{{countdowns}}" 
+      wx:key="id" 
+      class="countdown-card"
+      style="{{item.gradient ? 'background:' + item.gradient + ';' : 'background: ' + item.color + ';'}}"
+    >
+      <!-- 装饰性背景 Emoji -->
+      <text class="card-bg-emoji" wx:if="{{item.emoji}}">{{item.emoji}}</text>
+      
+      <!-- 玻璃感覆盖层 -->
+      <view class="glass-overlay"></view>
+
+      <view class="card-content">
+        <view class="festival-top">
+          <view class="festival-info-main">
+            <text class="festival-name">{{item.name}}</text>
+            <text class="festival-date-tag">{{item.date}}</text>
+          </view>
+          
+          <view class="days-badge">
+            <text class="days-number">{{item.daysLeft > 0 ? item.daysLeft : '0'}}</text>
+            <text class="days-text">DAYS</text>
+          </view>
+        </view>
+        
+        <view class="festival-bottom">
+          <text class="festival-desc">{{item.description}}</text>
+          <view class="progress-container">
+            <view class="progress-bar" style="width: {{item.daysLeft > 30 ? '100%' : (item.daysLeft / 30 * 100) + '%'}}"></view>
+          </view>
+        </view>
+      </view>
     </view>
-  </block>
+  </view>
 </view>

@@ -1,28 +1,71 @@
 // index.js
-const getApiBase = () => {
-  const accountInfo = wx.getAccountInfoSync();
-  return accountInfo.miniProgram.envVersion === 'release'
-    ? 'https://next-vite-delta.vercel.app/api'
-    : 'http://localhost:9527/api';
-};
+const apiService = require('../../utils/api.js');
 
 Page({
   data: {
-    festivals: [
-      { name: '春节', date: '2026-02-15', description: '中国农历新年', image: '/pages/image/spring.jpeg', color: '#FF6666' },
-      { name: '清明节', date: '2026-04-04', description: '缅怀先人，春季踏青好时节', image: '/pages/image/qingming.jpeg', color: '#66CC66' },
-      { name: '劳动节', date: '2026-05-01', description: '国际劳动节，享受假期', image: '/pages/image/wuyi.jpeg', color: '#FFCC33' },
-      { name: '端午节', date: '2026-06-19', description: '赛龙舟、吃粽子', image: '/pages/image/duanwu.jpeg', color: '#3399FF' },
-      { name: '中秋节', date: '2026-09-25', description: '团圆节，赏月吃月饼', image: '/pages/image/zhongqiu.jpeg', color: '#9966CC' },
-       { name: '国庆节', date: '2026-10-01', description: '纪念国家本身', image: '/pages/image/gq.jpeg', color: '#9966CC' },
-    ],
+    festivals: [],
     countdowns: [],
-    userId: '' // 用户ID
+    userId: '', // 用户ID
+    loading: true,
+    error: null
   },
 
   onLoad() {
     this.getUserId();
-    this.calculateCountdowns();
+    this.fetchFestivals();
+    
+    // 每分钟更新一次倒计时
+    this.timer = setInterval(() => {
+      if (this.data.festivals.length > 0) {
+        this.calculateCountdowns();
+      }
+    }, 60000);
+  },
+
+  onUnload() {
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
+  },
+
+  async fetchFestivals() {
+    this.setData({ loading: true, error: null });
+    try {
+      // 尝试从 API 获取
+      const res = await apiService.get('/festivals');
+      if (res.code === 200 && res.data && res.data.length > 0) {
+        this.setData({ 
+          festivals: res.data,
+          loading: false 
+        });
+        this.calculateCountdowns();
+      } else {
+        throw new Error('No data');
+      }
+    } catch (error) {
+      console.error('Failed to fetch festivals:', error);
+      // 如果 API 失败，使用备用数据（硬编码的）
+      const fallbackFestivals = [
+        { name: '春节', date: '2026-02-15', description: '中国农历新年', image: '/pages/image/spring.jpeg', color: '#FF6666' },
+        { name: '清明节', date: '2026-04-04', description: '缅怀先人，春季踏青好时节', image: '/pages/image/qingming.jpeg', color: '#66CC66' },
+        { name: '劳动节', date: '2026-05-01', description: '国际劳动节，享受假期', image: '/pages/image/wuyi.jpeg', color: '#FFCC33' },
+        { name: '端午节', date: '2026-06-19', description: '赛龙舟、吃粽子', image: '/pages/image/duanwu.jpeg', color: '#3399FF' },
+        { name: '中秋节', date: '2026-09-25', description: '团圆节，赏月吃月饼', image: '/pages/image/zhongqiu.jpeg', color: '#9966CC' },
+        { name: '国庆节', date: '2026-10-01', description: '纪念国家本身', image: '/pages/image/gq.jpeg', color: '#FF0000' },
+      ];
+      this.setData({ 
+        festivals: fallbackFestivals,
+        loading: false,
+        error: '使用离线数据'
+      });
+      this.calculateCountdowns();
+    }
+  },
+
+  onPullDownRefresh() {
+    this.fetchFestivals().then(() => {
+      wx.stopPullDownRefresh();
+    });
   },
 
   getUserId() {
@@ -40,7 +83,20 @@ Page({
       const festivalDate = new Date(festival.date);
       const diffTime = festivalDate - today;
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-      return { ...festival, daysLeft: diffDays };
+      
+      // 如果是今天，则显示"今天"
+      let daysLeftDisplay = diffDays;
+      if (diffDays === 0) {
+        daysLeftDisplay = '今天';
+      } else if (diffDays < 0) {
+        daysLeftDisplay = '已过期';
+      }
+      
+      return { 
+        ...festival, 
+        daysLeft: diffDays,
+        daysLeftDisplay: daysLeftDisplay 
+      };
     });
 
     this.setData({ countdowns });
