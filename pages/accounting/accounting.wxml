@@ -1,23 +1,23 @@
 <view class="container">
   <!-- 月度统计卡片 -->
-  <view class="stats-card">
+  <view class="stats-card {{showQueryPanel ? 'dimmed' : ''}}">
     <view class="stats-header">
       <text class="stats-title">{{currentMonth}}月收支</text>
-      <view class="query-btn" bindtap="toggleQueryPanel">
-        <text class="query-icon">🔍</text>
-        <text class="query-text">查询</text>
+      <view class="query-btn" bindtap="toggleQueryPanel" hover-class="btn-hover">
+        <text class="query-icon">📅</text>
+        <text class="query-text">历史查询</text>
       </view>
     </view>
     <view class="stats-content">
-      <view class="stats-item income">
+      <view class="stats-item income" hover-class="card-hover">
         <text class="stats-label">收入</text>
         <text class="stats-amount">+{{monthlyStats.income}}</text>
       </view>
-      <view class="stats-item expense">
+      <view class="stats-item expense" hover-class="card-hover">
         <text class="stats-label">支出</text>
         <text class="stats-amount">-{{monthlyStats.expense}}</text>
       </view>
-      <view class="stats-item balance">
+      <view class="stats-item balance" hover-class="card-hover">
         <text class="stats-label">结余</text>
         <text class="stats-amount {{monthlyStats.balance >= 0 ? 'positive' : 'negative'}}">
           {{monthlyStats.balance >= 0 ? '+' : ''}}{{monthlyStats.balance}}

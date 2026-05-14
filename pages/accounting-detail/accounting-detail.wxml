@@ -2,11 +2,11 @@
   <!-- 收支类型切换 -->
   <view class="type-selector">
     <view class="type-item {{type === 'expense' ? 'active expense' : ''}}"
-          data-type="expense" bindtap="switchType">
+          data-type="expense" bindtap="switchType" hover-class="tab-hover">
       <text>支出</text>
     </view>
     <view class="type-item {{type === 'income' ? 'active income' : ''}}"
-          data-type="income" bindtap="switchType">
+          data-type="income" bindtap="switchType" hover-class="tab-hover">
       <text>收入</text>
     </view>
   </view>

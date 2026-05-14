@@ -58,6 +58,11 @@
   background: linear-gradient(135deg, #2ecc71, #27ae60);
 }
 
+.tab-hover {
+  opacity: 0.8;
+  transform: scale(0.98);
+}
+
 /* 金额输入区域 - 强化质感 */
 .amount-section {
   background: rgba(255, 255, 255, 0.98);
@@ -129,8 +134,15 @@
   border-radius: 4rpx;
 }
 
+.categories-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  margin: 0 -10rpx;
+}
+
 .category-item {
-  width: calc(25% - 18rpx);
+  width: 25%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -138,6 +150,7 @@
   border-radius: 24rpx;
   margin-bottom: 20rpx;
   transition: all 0.3s;
+  box-sizing: border-box;
 }
 
 .category-item.selected {
@@ -203,14 +216,15 @@
   padding: 40rpx 30rpx;
 }
 
-.save-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
-  color: white !important;
-  font-size: 34rpx !important;
-  font-weight: 700 !important;
-  padding: 24rpx 0 !important;
-  border-radius: 30rpx !important;
-  box-shadow: 0 12rpx 30rpx rgba(118, 75, 162, 0.3) !important;
+.save-btn:active {
+  transform: scale(0.96);
+  opacity: 0.9;
+  transition: all 0.2s;
+}
+
+.category-item:active {
+  transform: scale(0.9);
+  background: #f0f4ff;
 }
 
 .delete-btn {

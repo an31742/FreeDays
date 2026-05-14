@@ -3,6 +3,7 @@
     "pages/index/index",
     "pages/accounting/accounting",
     "pages/accounting-detail/accounting-detail",
+    "pages/transaction-list/transaction-list",
     "pages/query-result/query-result",
     "pages/logs/logs"
   ],

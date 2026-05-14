@@ -273,9 +273,8 @@ Page({
 
   // 查看所有交易
   viewAllTransactions() {
-    wx.showToast({
-      title: '功能开发中...',
-      icon: 'none'
+    wx.navigateTo({
+      url: '/pages/transaction-list/transaction-list'
     });
   },
 

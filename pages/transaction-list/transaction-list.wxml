@@ -1,0 +1,116 @@
+<view class="container">
+  <!-- 顶部渐变背景 -->
+  <view class="top-bg"></view>
+
+  <!-- 账单概览卡片 -->
+  <view class="bill-header">
+    <view class="date-selector">
+      <picker mode="date" fields="{{queryMode === 'year' ? 'year' : 'month'}}" value="{{selectedDate}}" bindchange="onDateChange">
+        <view class="current-date">
+          <text class="date-text">{{displayDate}}</text>
+          <text class="arrow-down">▼</text>
+        </view>
+      </picker>
+      <view class="mode-switch">
+        <text class="mode-btn {{queryMode === 'month' ? 'active' : ''}}" bindtap="switchMode" data-mode="month">月账单</text>
+        <text class="mode-btn {{queryMode === 'year' ? 'active' : ''}}" bindtap="switchMode" data-mode="year">年账单</text>
+      </view>
+    </view>
+
+    <view class="total-stats">
+      <view class="stat-item">
+        <text class="stat-label">总支出 (元)</text>
+        <text class="stat-value expense">-{{summary.expense}}</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-label">总收入 (元)</text>
+        <text class="stat-value income">+{{summary.income}}</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-label">结余</text>
+        <text class="stat-value balance">{{summary.balance}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 年度月份柱状图 (仅年账单显示) -->
+  <view class="chart-section" wx:if="{{queryMode === 'year'}}">
+    <view class="section-title">收支趋势</view>
+    <scroll-view scroll-x class="chart-scroll">
+      <view class="bar-chart">
+        <view class="bar-item" wx:for="{{monthlyTrend}}" wx:key="month">
+          <view class="bar-group">
+            <view class="bar income" style="height: {{item.incomeHeight}}rpx"></view>
+            <view class="bar expense" style="height: {{item.expenseHeight}}rpx"></view>
+          </view>
+          <text class="bar-label">{{item.month}}月</text>
+        </view>
+      </view>
+    </scroll-view>
+    <view class="chart-legend">
+      <view class="legend-item"><text class="dot income"></text>收入</view>
+      <view class="legend-item"><text class="dot expense"></text>支出</view>
+    </view>
+  </view>
+
+  <!-- 支出排行 (分类占比) -->
+  <view class="rank-section">
+    <view class="section-title">支出分类排行</view>
+    <view class="rank-list" wx:if="{{categoryStats.expense.length > 0}}">
+      <view class="rank-item" wx:for="{{categoryStats.expense}}" wx:key="categoryId">
+        <view class="rank-info">
+          <text class="rank-name">{{item.categoryName}}</text>
+          <text class="rank-percent">{{item.percentage}}%</text>
+          <text class="rank-amount">￥{{item.amount}}</text>
+        </view>
+        <view class="progress-bg">
+          <view class="progress-inner" style="width: {{item.percentage}}%; background: {{item.color || '#667eea'}}"></view>
+        </view>
+      </view>
+    </view>
+    <view class="empty-state" wx:else>
+      <text class="empty-text">该时间段暂无支出记录</text>
+    </view>
+  </view>
+
+  <!-- 收入排行 (分类占比) -->
+  <view class="rank-section">
+    <view class="section-title">收入分类排行</view>
+    <view class="rank-list" wx:if="{{categoryStats.income.length > 0}}">
+      <view class="rank-item" wx:for="{{categoryStats.income}}" wx:key="categoryId">
+        <view class="rank-info">
+          <text class="rank-name">{{item.categoryName}}</text>
+          <text class="rank-percent">{{item.percentage}}%</text>
+          <text class="rank-amount">￥{{item.amount}}</text>
+        </view>
+        <view class="progress-bg">
+          <view class="progress-inner" style="width: {{item.percentage}}%; background: #2ecc71"></view>
+        </view>
+      </view>
+    </view>
+    <view class="empty-state" wx:else>
+      <text class="empty-text">该时间段暂无收入记录</text>
+    </view>
+  </view>
+
+  <!-- 最近流水明细 (仅月账单显示) -->
+  <view class="detail-section" wx:if="{{queryMode === 'month'}}">
+    <view class="section-title">账单明细</view>
+    <view class="transaction-list">
+      <view class="transaction-item" wx:for="{{transactions}}" wx:key="id" bindtap="viewDetail" data-id="{{item.id}}">
+        <view class="item-left">
+          <view class="category-icon" style="background-color: {{item.category ? item.category.color : '#667eea'}}">
+            <text>{{item.category ? item.category.icon : '💰'}}</text>
+          </view>
+          <view class="item-info">
+            <text class="item-title">{{item.note || (item.category ? item.category.name : '未知')}}</text>
+            <text class="item-date">{{item.date}}</text>
+          </view>
+        </view>
+        <text class="item-amount {{item.type}}">{{item.type === 'income' ? '+' : '-'}}{{item.amount}}</text>
+      </view>
+      <view class="load-more" wx:if="{{loading}}">加载中...</view>
+      <view class="load-more" wx:if="{{!hasMore && transactions.length > 0}}">已加载全部</view>
+    </view>
+  </view>
+</view>
