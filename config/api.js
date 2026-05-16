@@ -9,14 +9,14 @@ const config = {
 
   // 测试环境配置
   test: {
-    baseURL: 'https://next-vite-delta.vercel.app/api',  // 测试环境API域名
+    baseURL: 'https://nextvite.vercel.app/api',  // 测试环境API域名
     timeout: 15000,  // 测试环境可能需要更长超时时间
     debug: true      // 测试环境开启调试
   },
 
   // 生产环境配置
   production: {
-    baseURL: 'https://next-vite-delta.vercel.app/api',  // 你的生产环境API域名
+    baseURL: 'https://nextvite.vercel.app/api',  // 你的生产环境API域名
     timeout: 10000,
     debug: false
   }
