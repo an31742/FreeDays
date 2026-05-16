@@ -92,11 +92,11 @@ Page({
       if (res.code === 200) {
         this.setData({
           summary: {
-            income: res.data.summary && res.data.summary.income ? res.data.summary.income.toFixed(2) : '0.00',
-            expense: res.data.summary && res.data.summary.expense ? res.data.summary.expense.toFixed(2) : '0.00',
-            balance: res.data.summary && res.data.summary.balance ? res.data.summary.balance.toFixed(2) : '0.00'
+            income: res.data.summary.income.toFixed(2),
+            expense: res.data.summary.expense.toFixed(2),
+            balance: res.data.summary.balance.toFixed(2)
           },
-          categoryStats: res.data.categoryStats || { income: [], expense: [] }
+          categoryStats: res.data.categoryStats
         });
       }
     } catch (error) {
@@ -109,28 +109,24 @@ Page({
       const year = this.data.selectedDate;
       const res = await apiService.get('/statistics/yearly', { year });
       if (res.code === 200) {
-        const trend = res.data.monthlyTrend || [];
-        let maxAmount = 1;
-        if (trend.length > 0) {
-          const amounts = trend.map(m => Math.max(m.income || 0, m.expense || 0));
-          maxAmount = Math.max(...amounts, 1);
-        }
-
+        // 计算柱状图高度 (最大高度 150rpx)
+        const trend = res.data.monthlyTrend;
+        const maxAmount = Math.max(...trend.map(m => Math.max(m.income, m.expense)), 1);
         const processedTrend = trend.map(m => ({
           ...m,
-          incomeHeight: maxAmount > 0 ? (m.income / maxAmount) * 150 : 0,
-          expenseHeight: maxAmount > 0 ? (m.expense / maxAmount) * 150 : 0
+          incomeHeight: (m.income / maxAmount) * 150,
+          expenseHeight: (m.expense / maxAmount) * 150
         }));
 
         this.setData({
           summary: {
-            income: res.data.summary && res.data.summary.income ? res.data.summary.income.toFixed(2) : '0.00',
-            expense: res.data.summary && res.data.summary.expense ? res.data.summary.expense.toFixed(2) : '0.00',
-            balance: res.data.summary && res.data.summary.balance ? res.data.summary.balance.toFixed(2) : '0.00'
+            income: res.data.summary.income.toFixed(2),
+            expense: res.data.summary.expense.toFixed(2),
+            balance: res.data.summary.balance.toFixed(2)
           },
           categoryStats: {
-            income: res.data.categoryStats && res.data.categoryStats.topIncomeCategories || [],
-            expense: res.data.categoryStats && res.data.categoryStats.topExpenseCategories || []
+            income: res.data.categoryStats.topIncomeCategories,
+            expense: res.data.categoryStats.topExpenseCategories
           },
           monthlyTrend: processedTrend
         });
@@ -154,9 +150,7 @@ Page({
       });
 
       if (res.code === 200) {
-        const list = res.data && res.data.list ? res.data.list : [];
-        const pagination = res.data && res.data.pagination ? res.data.pagination : { page: 1, totalPages: 1 };
-        
+        const { list, pagination } = res.data;
         this.setData({
           transactions: [...this.data.transactions, ...list],
           page: this.data.page + 1,

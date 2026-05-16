@@ -23,7 +23,7 @@ const config = {
 };
 
 // 获取当前环境配置
-const env = 'production'; // 使用线上环境
+const env = 'development'; // 使用本地环境
 const apiConfig = config[env];
 
 module.exports = {

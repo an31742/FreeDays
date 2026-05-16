@@ -177,8 +177,8 @@
   color: #4a5568;
 }
 
-/* 备注和日期输入美化 */
-.input-section {
+/* 日期/备注表单区域 */
+.form-section {
   background: white;
   margin: 30rpx;
   border-radius: 40rpx;
@@ -186,53 +186,148 @@
   box-shadow: 0 15rpx 40rpx rgba(0, 0, 0, 0.05);
 }
 
-.input-group {
-  margin-bottom: 30rpx;
-}
-
-.input-group:last-child {
-  margin-bottom: 0;
-}
-
-.input-label {
-  font-size: 28rpx;
-  font-weight: 700;
-  color: #718096;
-  margin-bottom: 20rpx;
-  display: block;
-}
-
-.text-input, .picker-value {
+.form-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   background: #f8fafc;
-  padding: 24rpx 30rpx;
-  border-radius: 20rpx;
+  border-radius: 24rpx;
+  padding: 30rpx;
+  border: 2rpx solid #edf2f7;
+  transition: border-color 0.3s;
+}
+
+.form-item:active {
+  border-color: #667eea;
+}
+
+.form-label {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #2d3748;
+  flex-shrink: 0;
+  margin-right: 20rpx;
+}
+
+.form-value {
+  display: flex;
+  align-items: center;
+  gap: 12rpx;
+  font-size: 30rpx;
+  color: #667eea;
+  font-weight: 600;
+}
+
+.arrow {
+  font-size: 28rpx;
+  color: #a0aec0;
+  font-weight: 300;
+}
+
+.form-input {
+  flex: 1;
+  text-align: right;
   font-size: 30rpx;
   color: #2d3748;
-  border: 2rpx solid #edf2f7;
+  background: transparent;
+  padding: 0;
 }
 
-/* 按钮美化 */
-.action-section {
-  padding: 40rpx 30rpx;
+.form-input::placeholder {
+  color: #cbd5e0;
+}
+
+.form-divider {
+  height: 1rpx;
+  background: #edf2f7;
+  margin: 8rpx 0;
+}
+
+.date-readonly {
+  border-color: transparent;
+  background: transparent;
+}
+
+.form-value-readonly {
+  font-size: 30rpx;
+  color: #4a5568;
+  font-weight: 500;
+}
+
+/* 操作按钮组 */
+.action-buttons {
+  padding: 20rpx 30rpx 60rpx;
+}
+
+.save-btn {
+  width: 100%;
+  height: 100rpx;
+  line-height: 100rpx;
+  border-radius: 50rpx;
+  font-size: 34rpx;
+  font-weight: 800;
+  color: white;
+  letter-spacing: 8rpx;
+  border: none;
+  box-shadow: 0 15rpx 35rpx rgba(0, 0, 0, 0.15);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.save-btn.expense {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%);
+}
+
+.save-btn.income {
+  background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
 }
 
 .save-btn:active {
   transform: scale(0.96);
-  opacity: 0.9;
-  transition: all 0.2s;
+  opacity: 0.85;
+}
+
+.edit-btn {
+  width: 100%;
+  height: 100rpx;
+  line-height: 100rpx;
+  border-radius: 50rpx;
+  font-size: 34rpx;
+  font-weight: 800;
+  color: #667eea;
+  letter-spacing: 8rpx;
+  background: white;
+  border: 3rpx solid #667eea;
+  box-shadow: 0 10rpx 25rpx rgba(102, 126, 234, 0.12);
+  transition: all 0.3s;
+}
+
+.edit-btn:active {
+  transform: scale(0.96);
+  background: #f0f4ff;
+}
+
+.delete-btn {
+  width: 100%;
+  height: 90rpx;
+  line-height: 90rpx;
+  border-radius: 50rpx;
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #ff4757;
+  letter-spacing: 4rpx;
+  background: white;
+  border: 2rpx solid #ff4757;
+  margin-top: 24rpx;
+  box-shadow: 0 8rpx 20rpx rgba(255, 71, 87, 0.08);
+  transition: all 0.3s;
+}
+
+.delete-btn:active {
+  transform: scale(0.96);
+  background: #fff5f5;
 }
 
 .category-item:active {
   transform: scale(0.9);
   background: #f0f4ff;
-}
-
-.delete-btn {
-  background: #fff !important;
-  color: #ff4757 !important;
-  font-size: 30rpx !important;
-  font-weight: 600 !important;
-  margin-top: 30rpx !important;
-  border: 2rpx solid #ff4757 !important;
-  border-radius: 30rpx !important;
 }
